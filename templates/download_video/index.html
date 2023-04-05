@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Download Youtube Video</title>
+</head>
+<body>
+    <h1>Download Youtube Video - Highest Resolution</h1>
+    <div class="modal-body">
+    <form method="POST" action="/">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Youtube Link </label>
+            <label>
+                <input type="text" id="link" name="link" placeholder="Youtube Link" class="form-control" required style="width:500px"/>
+            </label>
+        </div>
+        <br>
+        <div class="justify-content-end">
+            <button type="submit" class="btn btn-primary-outline float-end">Descargar</button>
+        </div>
+    </form>
+    <button onclick="InfoVideo()">
+        Información video
+    </button>
+    {% if response %}
+    <p style="color:darkgreen;">{{response}}</p>
+    {% endif %}
+    <div id="name_video"></div>
+    <div id="image_video"></div>
+    <script>
+        function InfoVideo() {
+            const myHeaders = new Headers();
+            const formdata = new FormData();
+            formdata.append("link", document.getElementById("link").value);
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formdata,
+                redirect: 'follow'
+            };
+
+            fetch("http://127.0.0.1:8000/info_video/", requestOptions).then(
+                  response => response.text()
+              ).then(
+                  result => UpdateValues(result)
+            ).catch(
+                error => console.log('error', error)
+            );
+        }
+        function UpdateValues(result) {
+            const json_result = JSON.parse(result)
+            const html = '<img src="'+json_result.image+'"/>';
+            const div = document.getElementById("image_video");
+            div.innerHTML = html;
+            const html2 = '<p>'+json_result.title+'</p>';
+            const div2 = document.getElementById("name_video");
+            div2.innerHTML = html2
+        }
+    </script>
+</div>
+</body>
+</html>
